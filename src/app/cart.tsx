@@ -5,8 +5,10 @@ import { useCart } from "@/provider/CartProvider";
 import { FlatList } from "react-native";
 import CartListItem from "@/components/CartListItem";
 import Button from "@/components/Button";
+import { useSegments } from "expo-router";
 const CartScreen = () => {
   const { items, total } = useCart();
+
   if (items.length == 0) {
     return (
       <View

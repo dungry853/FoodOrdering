@@ -7,15 +7,17 @@ import {
   Pressable,
 } from "react-native";
 import { Product } from "../types";
-import { Link } from "expo-router";
+import { Link, useSegments } from "expo-router";
 type ProductListItemProps = {
   product: Product;
 };
 export const defaultPizzaImage =
   "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/peperoni.png";
 const ProductListItem = ({ product }: ProductListItemProps) => {
+  const segments = useSegments();
+
   return (
-    <Link href={`/menu/${product.id}`} asChild>
+    <Link href={`/${segments[0]}/menu/${product.id}`} asChild>
       <Pressable style={styles.product_container}>
         <Image
           source={{ uri: product.image || defaultPizzaImage }}
