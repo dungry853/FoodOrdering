@@ -7,7 +7,7 @@ import { useState } from "react";
 import Button from "@/components/Button";
 import { useCart } from "@/provider/CartProvider";
 import { PizzaSize } from "@/types";
-const ProductDetailScreen = () => {
+function ProductDetailScreen() {
   const { id } = useLocalSearchParams();
   const product = products.find((p) => p.id.toString() == id);
   const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
@@ -63,7 +63,7 @@ const ProductDetailScreen = () => {
       <Button onPress={addToCart} text="Add To Cart" />
     </View>
   );
-};
+}
 
 const Styles = StyleSheet.create({
   container: {
