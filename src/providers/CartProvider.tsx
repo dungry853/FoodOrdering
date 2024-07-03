@@ -58,6 +58,3 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 };
 export default CartProvider;
 export const useCart = () => useContext(CartContext);
-function randomUUID(): string {
-  throw new Error("Function not implemented.");
-}

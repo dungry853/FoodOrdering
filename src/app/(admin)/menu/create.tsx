@@ -7,23 +7,57 @@ import {
   Alert,
   TouchableWithoutFeedback,
   Keyboard,
+  ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Button from "@/components/Button";
 import { defaultPizzaImage } from "@/components/ProductListItem";
 import * as ImagePicker from "expo-image-picker";
-import { Stack, useLocalSearchParams } from "expo-router";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import products from "@assets/data/products";
+import {
+  useDeleteProduct,
+  useInsertProduct,
+  useProduct,
+  useUpdateProduct,
+} from "@/api/products";
+import { useRoute } from "@react-navigation/native";
 
 const CreateProductScreen = () => {
-  const { id } = useLocalSearchParams();
+  const { id: idString } = useLocalSearchParams();
+  const id = Number(idString);
   const isUpdating = !!id; // !!'text' chuyển về giá trị true hoặc false
-  const product = products.find((p) => p.id.toString() == id);
+  const { data: updatingProduct, error, isLoading } = useProduct(id);
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [nameErrors, setNameErrors] = useState("");
   const [priceErrors, setPriceErrors] = useState("");
   const [image, setImage] = useState("");
+
+  const { mutate: insertProduct } = useInsertProduct();
+  const { mutate: updateProduct } = useUpdateProduct();
+  const { mutate: deleteProduct } = useDeleteProduct();
+  const router = useRouter();
+  useEffect(() => {
+    if (updatingProduct) {
+      setName(updatingProduct.name);
+      setPrice(updatingProduct.price.toString());
+      setImage(updatingProduct.image || defaultPizzaImage);
+    }
+  }, [updatingProduct]);
+
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        style={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
+    );
+  }
 
   const pickImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -39,7 +73,6 @@ const CreateProductScreen = () => {
   };
   const onSubmit = () => {
     if (isUpdating) {
-      //Update something
       onUpdate();
     } else {
       onCreate();
@@ -50,21 +83,41 @@ const CreateProductScreen = () => {
       return;
     }
     console.warn("Creating Product, " + name);
-
     //Save in the database
-    resetFields();
+    insertProduct(
+      { name, price: parseFloat(price), image },
+      {
+        onSuccess: () => {
+          resetFields();
+          router.back();
+        },
+      }
+    );
   };
   const onUpdate = () => {
     if (!validateInput()) {
       return;
     }
     console.warn("Updating Product, " + name);
-
+    updateProduct(
+      { id, name, price: parseFloat(price), image },
+      {
+        onSuccess: () => {
+          resetFields();
+          router.back();
+        },
+      }
+    );
     //Save in the database
     //resetFields();
   };
   const onDelete = () => {
-    console.warn("Deleting Product");
+    deleteProduct(id, {
+      onSuccess: () => {
+        resetFields();
+        router.replace("/(admin)");
+      },
+    });
   };
   const confirmDelete = () => {
     Alert.alert("Confirm", "Are you sure you want to delete this product?", [
@@ -108,9 +161,10 @@ const CreateProductScreen = () => {
         <Stack.Screen
           options={{ title: isUpdating ? "Update Product" : "Create Product" }}
         />
+
         <Image
           source={{
-            uri: isUpdating ? product?.image ?? image : defaultPizzaImage,
+            uri: image || defaultPizzaImage,
           }}
           style={Styles.image}
         />
@@ -122,7 +176,7 @@ const CreateProductScreen = () => {
           placeholder="Name"
           style={Styles.input}
           placeholderTextColor="gainsboro"
-          value={isUpdating ? product?.name : name}
+          value={name}
           onChangeText={setName}
         />
         <Text style={{ color: "red" }}>{nameErrors}</Text>
@@ -133,7 +187,7 @@ const CreateProductScreen = () => {
           style={Styles.input}
           placeholderTextColor="gainsboro"
           keyboardType="numeric"
-          value={isUpdating ? product?.price.toString() : price}
+          value={price}
           onChangeText={setPrice}
         />
         <Text style={{ color: "red" }}>{priceErrors}</Text>

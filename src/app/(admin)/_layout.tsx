@@ -4,6 +4,7 @@ import { Colors } from "../../constants/Colors";
 import { useColorScheme } from "hooks/useColorScheme";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Pressable } from "react-native";
+import { useAuth } from "@/providers/AuthProvider";
 
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>["name"];
@@ -13,7 +14,10 @@ function TabBarIcon(props: {
 }
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-
+  const { session } = useAuth();
+  if (!session) {
+    return <Redirect href={"/"} />;
+  }
   return (
     <Tabs
       screenOptions={{

@@ -1,12 +1,53 @@
-import { StyleSheet, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  ActivityIndicator,
+  Text,
+} from "react-native";
 
-import products from "@assets/data/products";
 import ProductListItem from "@components/ProductListItem";
+import { useProductlist } from "@/api/products";
 export default function HomeScreen() {
+  const { data, error, isLoading } = useProductlist();
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        style={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
+    );
+  }
+  if (error) {
+    return (
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ color: "white" }}>Failed to fetch products</Text>;
+      </View>
+    );
+  }
+  // useEffect(() => {
+  //   const fetchProducts = async () => {
+  //     const { data, error } = await supabase.from("products").select("*");
+  //     console.log(error);
+  //     console.log(data);
+  //   };
+  //   fetchProducts();
+  // });
   return (
     <View style={styles.container}>
       <FlatList
-        data={products}
+        data={data}
         renderItem={({ item }) => (
           <ProductListItem product={item}></ProductListItem>
         )}

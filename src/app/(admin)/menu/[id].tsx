@@ -1,27 +1,51 @@
-import { StyleSheet, Text, View, Image, Pressable } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
 import React from "react";
 import { Link, Stack, useLocalSearchParams } from "expo-router";
 import products from "@assets/data/products";
 import { defaultPizzaImage } from "@/components/ProductListItem";
 import { useState } from "react";
 import Button from "@/components/Button";
-import { useCart } from "@/provider/CartProvider";
+import { useCart } from "@/providers/CartProvider";
 import { PizzaSize } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { useProduct } from "@/api/products";
 const ProductDetailScreen = () => {
-  const { id } = useLocalSearchParams();
-  const product = products.find((p) => p.id.toString() == id);
-  const sizes: PizzaSize[] = ["S", "M", "L", "XL"];
-  const [selectedSize, setSelectedSize] = useState<PizzaSize>("S");
-  const { addItem } = useCart();
-  if (!product) {
-    return <Text>Product Not Found!!!</Text>;
+  const { id: idString } = useLocalSearchParams();
+  const id = Number(idString);
+  const { data: product, error, isLoading } = useProduct(id);
+  if (error || !product) {
+    return (
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ color: "white" }}>Product Not Found</Text>
+      </View>
+    );
   }
-  const addToCart = () => {
-    if (!product) return;
-    addItem(product, selectedSize);
-    console.warn("Added to Cart, size: ", selectedSize);
-  };
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        style={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
+    );
+  }
   return (
     <View style={Styles.container}>
       <Stack.Screen

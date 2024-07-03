@@ -5,16 +5,28 @@ import {
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 import Button from "../../components/Button";
 import { Colors } from "../../constants/Colors";
 import { Link, Stack } from "expo-router";
+import { supabase } from "@/lib/supabase";
 
 const SignUpScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [loading, setLoading] = useState(false);
+  async function signUpWithEmail() {
+    setLoading(true);
+    console.log(email);
+    const { error } = await supabase.auth.signUp({
+      email: email,
+      password: password,
+    });
+    if (error) Alert.alert(error.message);
+    setLoading(false);
+  }
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={styles.container}>
@@ -37,8 +49,12 @@ const SignUpScreen = () => {
           secureTextEntry
         />
 
-        <Button text="Create account" />
-        <Link href="/(auth)/sign-in" style={styles.textButton}>
+        <Button
+          text={loading ? "Creating account" : "Create account"}
+          disabled={loading}
+          onPress={signUpWithEmail}
+        />
+        <Link href="/(auth)/sign_in" style={styles.textButton}>
           Sign in
         </Link>
       </View>
