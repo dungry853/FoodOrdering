@@ -6,10 +6,11 @@ import {
   View,
   Pressable,
 } from "react-native";
-import { Product } from "../types";
 import { Link, useSegments } from "expo-router";
+import { Tables } from "@/database.types";
+
 type ProductListItemProps = {
-  product: Product;
+  product: Tables<"products">;
 };
 export const defaultPizzaImage =
   "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/peperoni.png";

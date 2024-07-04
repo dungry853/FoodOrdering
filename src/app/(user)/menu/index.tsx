@@ -9,7 +9,7 @@ import {
 import ProductListItem from "@components/ProductListItem";
 import { useProductlist } from "@/api/products";
 export default function HomeScreen() {
-  const { data, error, isLoading } = useProductlist();
+  const { data: products, error, isLoading } = useProductlist();
   if (isLoading) {
     return (
       <ActivityIndicator
@@ -47,7 +47,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={data}
+        data={products}
         renderItem={({ item }) => (
           <ProductListItem product={item}></ProductListItem>
         )}

@@ -8,13 +8,13 @@ import {
 } from "react-native";
 import React from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
-import products from "@assets/data/products";
 import { defaultPizzaImage } from "@/components/ProductListItem";
 import { useState } from "react";
 import Button from "@/components/Button";
 import { useCart } from "@/providers/CartProvider";
-import { PizzaSize, Product } from "@/types";
+import { PizzaSize } from "@/types";
 import { useProduct } from "@/api/products";
+import { Tables } from "@/database.types";
 function ProductDetailScreen() {
   const { id: idString } = useLocalSearchParams();
   const id = Number(idString);

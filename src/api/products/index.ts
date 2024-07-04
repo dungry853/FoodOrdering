@@ -1,5 +1,5 @@
+import { Tables } from "@/database.types";
 import { supabase } from "@/lib/supabase";
-import { Product } from "@/types";
 import {
   Mutation,
   Query,
@@ -7,6 +7,8 @@ import {
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
+
+type Product = Tables<"products">;
 
 export const useProductlist = () => {
   return useQuery({
