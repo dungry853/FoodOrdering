@@ -15,6 +15,7 @@ import { useCart } from "@/providers/CartProvider";
 import { PizzaSize } from "@/types";
 import { useProduct } from "@/api/products";
 import { Tables } from "@/database.types";
+import RemoteImage from "@/components/RemoteImage";
 function ProductDetailScreen() {
   const { id: idString } = useLocalSearchParams();
   const id = Number(idString);
@@ -57,8 +58,9 @@ function ProductDetailScreen() {
   return (
     <View style={Styles.container}>
       <Stack.Screen options={{ title: product?.name }} />
-      <Image
-        source={{ uri: product.image || defaultPizzaImage }}
+      <RemoteImage
+        path={product.image}
+        fallback={defaultPizzaImage}
         style={Styles.image}
       />
       <Text style={Styles.sizeTitle}>Select Size</Text>

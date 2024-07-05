@@ -2,24 +2,38 @@ import { CartItem } from "@/types";
 import { PropsWithChildren, createContext, useContext, useState } from "react";
 import { randomUUID as cryptoRandomUUID } from "expo-crypto";
 import { Tables } from "@/database.types";
-
-export const CartContext = createContext<CartType>({
-  items: [],
-  addItem: () => {},
-  updateQuantity: () => {},
-  total: 0,
-});
+import { useInsertOrder } from "@/api/orders";
+import { useRouter } from "expo-router";
+import { useInsertOrderItems } from "@/api/order-items";
 
 type Product = Tables<"products">;
 
+//Define Type Of Cart
 type CartType = {
   items: CartItem[];
   addItem: (product: Product, size: CartItem["size"]) => void;
   updateQuantity: (itemId: string, amount: -1 | 1) => void;
   total: number;
+  checkout: () => void;
 };
+
+//Declare Context
+export const CartContext = createContext<CartType>({
+  items: [],
+  addItem: () => {},
+  updateQuantity: () => {},
+  total: 0,
+  checkout: () => {},
+});
+
+//Component
 const CartProvider = ({ children }: PropsWithChildren) => {
   const [items, setItems] = useState<CartItem[]>([]);
+
+  const { mutate: insertOrder } = useInsertOrder();
+  const { mutate: insertOrderItems } = useInsertOrderItems();
+  const router = useRouter();
+  //Add Item
   const addItem = (product: Product, size: CartItem["size"]) => {
     //If already in cart, increament Quantity
     const existingItem = items.find(
@@ -39,6 +53,8 @@ const CartProvider = ({ children }: PropsWithChildren) => {
 
     setItems([newCartItem, ...items]);
   };
+
+  //Update Quantity
   const updateQuantity = (itemId: string, amount: -1 | 1) => {
     setItems(
       items
@@ -50,13 +66,47 @@ const CartProvider = ({ children }: PropsWithChildren) => {
         .filter((item) => item.quantity > 0)
     );
   };
+
+  //Set Total of Cart
   const total = items.reduce(
     (sum, item) => (sum += item.product.price * item.quantity),
     0
   );
+  const clearCart = () => {
+    setItems([]);
+  };
+  //Checkout Method
+  const checkout = () => {
+    insertOrder(
+      { total },
+      {
+        onSuccess: saveOrderItems,
+      }
+    );
+  };
+
+  //Save Order Items
+  const saveOrderItems = (order: Tables<"orders">) => {
+    const orderItems = items.map((cartItem) => ({
+      order_id: order.id,
+      product_id: cartItem.product_id,
+      size: cartItem.size,
+      quantity: cartItem.quantity,
+    }));
+    insertOrderItems(orderItems, {
+      onSuccess() {
+        console.warn("Checkout Successfully");
+        clearCart();
+        router.push(`/(user)/orders/${order.id}`);
+      },
+    });
+    //
+  };
   //updateQuantity
   return (
-    <CartContext.Provider value={{ items, addItem, updateQuantity, total }}>
+    <CartContext.Provider
+      value={{ items, addItem, updateQuantity, total, checkout }}
+    >
       {children}
     </CartContext.Provider>
   );

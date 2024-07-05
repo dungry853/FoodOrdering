@@ -1,13 +1,16 @@
 import { View, Text, StyleSheet, FlatList } from "react-native";
 import React from "react";
 import { Stack, useLocalSearchParams } from "expo-router";
-import orders from "@assets/data/orders";
 import OrderListItem from "@/components/OrderListItem";
 import OrderItemListItem from "@/components/OrderItemListItem";
+import { useOrderDetails } from "@/api/orders";
+import { useUpdateOrderSubscriptionByID } from "@/api/orders/subscriptions";
 
 const OrderDetailsScreen = () => {
-  const { id } = useLocalSearchParams();
-  const order = orders.find((item) => item.id.toString() == id);
+  const { id: idString } = useLocalSearchParams();
+  const id = Number(idString);
+  useUpdateOrderSubscriptionByID(id);
+  const { data: order, error, isLoading } = useOrderDetails(id);
   if (!order) {
     return (
       <Text style={{ color: "white", alignSelf: "center" }}>

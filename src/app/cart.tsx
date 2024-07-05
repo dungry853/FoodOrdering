@@ -7,7 +7,7 @@ import CartListItem from "@/components/CartListItem";
 import Button from "@/components/Button";
 import { useSegments } from "expo-router";
 const CartScreen = () => {
-  const { items, total } = useCart();
+  const { items, total, checkout } = useCart();
 
   if (items.length == 0) {
     return (
@@ -39,7 +39,7 @@ const CartScreen = () => {
           <Text style={{ color: "white", fontSize: 23, fontWeight: "500" }}>
             Total: ${total}
           </Text>
-          <Button text="Checkout" />
+          <Button text="Checkout" onPress={checkout} />
         </View>
 
         <StatusBar style={Platform.OS == "ios" ? "light" : "auto"} />

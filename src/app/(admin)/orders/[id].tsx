@@ -1,20 +1,54 @@
-import { View, Text, StyleSheet, FlatList, Pressable } from "react-native";
-import React from "react";
-import { Stack, useLocalSearchParams } from "expo-router";
-import orders from "@assets/data/orders";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  Pressable,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect } from "react";
+import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+
 import OrderListItem from "@/components/OrderListItem";
 import OrderItemListItem from "@/components/OrderItemListItem";
 import { OrderStatusList } from "@/types";
-import { Colors } from "@/constants/Colors";
+import { useOrderDetails, useUpdateOrder } from "@/api/orders";
+import { supabase } from "@/lib/supabase";
 
 const OrderDetailsScreen = () => {
-  const { id } = useLocalSearchParams();
-  const order = orders.find((item) => item.id.toString() == id);
-  if (!order) {
+  const { id: idString } = useLocalSearchParams();
+  const id = Number(idString);
+  const { data: order, error, isLoading } = useOrderDetails(id);
+
+  const { mutate: updateOrder } = useUpdateOrder();
+  const updateStatus = (status: string) => {
+    updateOrder({ id: id, updatedField: { status } });
+  };
+
+  if (error || !order) {
     return (
-      <Text style={{ color: "white", alignSelf: "center" }}>
-        Order not found !!!
-      </Text>
+      <View
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+        }}
+      >
+        <Text style={{ color: "white" }}>Order Not Found</Text>
+      </View>
+    );
+  }
+  if (isLoading) {
+    return (
+      <ActivityIndicator
+        style={{
+          display: "flex",
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      />
     );
   }
   return (
@@ -33,7 +67,9 @@ const OrderDetailsScreen = () => {
               {OrderStatusList.map((status) => (
                 <Pressable
                   key={status}
-                  onPress={() => console.warn("Update status")}
+                  onPress={() => {
+                    updateStatus(status);
+                  }}
                   style={{
                     borderColor: "rgb(250, 177, 42)",
                     borderWidth: 1,

@@ -16,6 +16,7 @@ import { useCart } from "@/providers/CartProvider";
 import { PizzaSize } from "@/types";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useProduct } from "@/api/products";
+import RemoteImage from "@/components/RemoteImage";
 const ProductDetailScreen = () => {
   const { id: idString } = useLocalSearchParams();
   const id = Number(idString);
@@ -67,8 +68,9 @@ const ProductDetailScreen = () => {
           ),
         }}
       />
-      <Image
-        source={{ uri: product.image || defaultPizzaImage }}
+      <RemoteImage
+        path={product.image}
+        fallback={defaultPizzaImage}
         style={Styles.image}
       />
       <Text style={Styles.name}>{product.name}</Text>

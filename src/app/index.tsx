@@ -8,7 +8,7 @@ import { supabase } from "@/lib/supabase";
 const index = () => {
   const { session, loading } = useAuth();
   if (loading) {
-    return <ActivityIndicator />;
+    return <ActivityIndicator />; //ActivityIndicator là 1 thành phần được sử dụng để hiển thị vòng tròn khi dữ liệu đang tải
   }
   if (!session) {
     return <Redirect href={"/sign_in"} />;
@@ -20,9 +20,6 @@ const index = () => {
       </Link>
       <Link href={"/(admin)"} asChild>
         <Button text="Admin" />
-      </Link>
-      <Link href={"/(auth)/sign_in"} asChild>
-        <Button text="Sign In" />
       </Link>
 
       <Button text="Sign Out" onPress={() => supabase.auth.signOut()} />

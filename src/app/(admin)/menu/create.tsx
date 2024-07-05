@@ -15,6 +15,8 @@ import { defaultPizzaImage } from "@/components/ProductListItem";
 import * as ImagePicker from "expo-image-picker";
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import products from "@assets/data/products";
+import * as FileSystem from "expo-file-system";
+import { decode } from "base64-arraybuffer";
 import {
   useDeleteProduct,
   useInsertProduct,
@@ -22,6 +24,9 @@ import {
   useUpdateProduct,
 } from "@/api/products";
 import { useRoute } from "@react-navigation/native";
+import { randomUUID } from "expo-crypto";
+import { supabase } from "@/lib/supabase";
+import { Product } from "@/types";
 
 const CreateProductScreen = () => {
   const { id: idString } = useLocalSearchParams();
@@ -71,6 +76,7 @@ const CreateProductScreen = () => {
       setImage(result.assets[0].uri);
     }
   };
+
   const onSubmit = () => {
     if (isUpdating) {
       onUpdate();
@@ -78,14 +84,16 @@ const CreateProductScreen = () => {
       onCreate();
     }
   };
-  const onCreate = () => {
+  const onCreate = async () => {
     if (!validateInput()) {
       return;
     }
     console.warn("Creating Product, " + name);
+    const imagePath = await uploadImage();
+
     //Save in the database
     insertProduct(
-      { name, price: parseFloat(price), image },
+      { name, price: parseFloat(price), image: imagePath },
       {
         onSuccess: () => {
           resetFields();
@@ -154,7 +162,23 @@ const CreateProductScreen = () => {
     setNameErrors("");
     setPriceErrors("");
   };
-
+  const uploadImage = async () => {
+    if (!image.startsWith("file://")) {
+      return;
+    }
+    //Lưu ý: nhớ import thư viện expo-file-system bằng import * as FileSystem from 'expo-file-system'; để có đc hàm readAsStringAsync
+    const base64 = await FileSystem.readAsStringAsync(image, {
+      encoding: "base64",
+    });
+    const filePath = `${randomUUID()}.png`;
+    const contentType = "image/png";
+    const { data, error } = await supabase.storage
+      .from("product-images")
+      .upload(filePath, decode(base64), { contentType });
+    if (data) {
+      return data.path;
+    }
+  };
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <View style={Styles.container}>
