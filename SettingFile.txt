@@ -1,0 +1,13 @@
+Lệnh run public SERVER: C:\Users\ACER\Downloads\ngrok http --domain=racer-right-bullfrog.ngrok-free.app 54321
+Lệnh run app qua Tunnel: npx expo start --tunnel 
+Lệnh init supabase: npx supabase init 
+Lệnh link supabase với project: npx supabase link --project-ref
+Lệnh pull DB từ supabase: npx supabase db pull
+Lệnh run supabase local with docker: npx supabase start
+Lệnh run supabase status: npx supabase status 
+Lệnh reset db supabase: npx supabase db reset
+Lệnh stop supabase: npx supabase stop 
+
+
+Lưu ý:
+- Cần phải có DOCKER và ngrok để làm việc với supabase local (nếu không sử dụng được mạng LAN và localhost)
