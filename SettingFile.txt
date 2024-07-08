@@ -7,7 +7,8 @@ Lệnh run supabase local with docker: npx supabase start
 Lệnh run supabase status: npx supabase status 
 Lệnh reset db supabase: npx supabase db reset
 Lệnh stop supabase: npx supabase stop 
-
+Lệnh clear cache: npx expo start --tunnel --reset-cache
+Lệnh serve functions: npx supabase functions serve --env-file .env payment-sheet
 
 Lưu ý:
 - Cần phải có DOCKER và ngrok để làm việc với supabase local (nếu không sử dụng được mạng LAN và localhost)

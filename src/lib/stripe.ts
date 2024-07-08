@@ -16,12 +16,14 @@ const fetchPaymentSheetParams = async (amount: number) => {
 export const initializePaymentSheet = async(amount:number) => {
     console.log('Initializing payment sheet, for: ',amount);
     
-    const {paymentIntent,publishableKey} = await fetchPaymentSheetParams(amount);
+    const {paymentIntent,publishableKey,ephemeralKey,customer} = await fetchPaymentSheetParams(amount);
     
     if(!paymentIntent || !publishableKey) return;
 
     await initPaymentSheet({
       merchantDisplayName:"zunxhoof.dev",
+      customerId:customer.id,
+      customerEphemeralKeySecret:ephemeralKey,
       paymentIntentClientSecret: paymentIntent,
       defaultBillingDetails:{
         name: 'Jane Doe'
