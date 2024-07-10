@@ -3,12 +3,16 @@ Lệnh run app qua Tunnel: npx expo start --tunnel
 Lệnh init supabase: npx supabase init 
 Lệnh link supabase với project: npx supabase link --project-ref
 Lệnh pull DB từ supabase: npx supabase db pull
+Lệnh push DB từ supabase Local: npx supabase db push
 Lệnh run supabase local with docker: npx supabase start
 Lệnh run supabase status: npx supabase status 
 Lệnh reset db supabase: npx supabase db reset
 Lệnh stop supabase: npx supabase stop 
 Lệnh clear cache: npx expo start --tunnel --reset-cache
 Lệnh serve functions: npx supabase functions serve --env-file .env payment-sheet
+
+
+Install lib notifications: npx expo install expo-notifications expo-device expo-constants
 
 Lưu ý:
 - Cần phải có DOCKER và ngrok để làm việc với supabase local (nếu không sử dụng được mạng LAN và localhost)

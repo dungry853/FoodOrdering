@@ -54,7 +54,9 @@
     "react-native-url-polyfill": "^2.0.0",
     "react-native-vector-icons": "^10.1.0",
     "react-native-web": "~0.19.10",
-    "@stripe/stripe-react-native": "0.37.2"
+    "@stripe/stripe-react-native": "0.37.2",
+    "expo-notifications": "~0.28.9",
+    "expo-device": "~6.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
