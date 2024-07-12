@@ -3,6 +3,8 @@ import { Text, View, Button, Platform } from 'react-native';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
+import { supabase } from './supabase';
+import { Tables } from '@/database.types';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -12,12 +14,12 @@ Notifications.setNotificationHandler({
   }),
 });
 
-async function sendPushNotification(expoPushToken: string) {
+async function sendPushNotification(expoPushToken: string,title: string, body: string) {
   const message = {
     to: expoPushToken,
     sound: 'default',
-    title: 'Original Title',
-    body: 'And here is the body!',
+    title,
+    body,
     data: { someData: 'goes here' },
   };
 
@@ -77,4 +79,23 @@ export async function registerForPushNotificationsAsync() {
   } else {
     handleRegistrationError('Must use physical device for push notifications');
   }
+}
+
+const getUserToken = async (userID:any)=>{
+  const {data,error} = await supabase.from('profiles').select('*').eq('id',userID).single();
+  return data;
+}
+
+
+export const notifyUserAboutOrderUpdate = async(order: Tables<'orders'>)=>{
+    const token = await getUserToken(order.user_id);
+    const title = `Your order is ${order.status}`;
+    let body = '';
+    if(order.status == 'Cooking')
+      body = 'The food is being cooked, please wait.';
+    else if (order.status == 'Delivering')
+      body = 'The food is being delivered to you, please wait a moment.';
+    else if (order.status == 'Delivered')
+      body = 'The food has been delivered successfully.';
+    sendPushNotification(token.expo_push_token,title,body);
 }

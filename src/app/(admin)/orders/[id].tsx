@@ -14,15 +14,22 @@ import OrderItemListItem from "@/components/OrderItemListItem";
 import { OrderStatusList } from "@/types";
 import { useOrderDetails, useUpdateOrder } from "@/api/orders";
 import { supabase } from "@/lib/supabase";
+import { notifyUserAboutOrderUpdate } from "@/lib/notifications";
+import { useAuth } from "@/providers/AuthProvider";
 
 const OrderDetailsScreen = () => {
   const { id: idString } = useLocalSearchParams();
   const id = Number(idString);
   const { data: order, error, isLoading } = useOrderDetails(id);
-
   const { mutate: updateOrder } = useUpdateOrder();
-  const updateStatus = (status: string) => {
-    updateOrder({ id: id, updatedField: { status } });
+  const updateStatus = async (status: string) => {
+    await updateOrder({
+      id: id,
+      updatedField: { status },
+    });
+    if (order) {
+      await notifyUserAboutOrderUpdate({ ...order, status });
+    }
   };
 
   if (error || !order) {

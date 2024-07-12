@@ -10,7 +10,8 @@ Lệnh reset db supabase: npx supabase db reset
 Lệnh stop supabase: npx supabase stop 
 Lệnh clear cache: npx expo start --tunnel --reset-cache
 Lệnh serve functions: npx supabase functions serve --env-file .env payment-sheet
-
+Lệnh push all secrects key from the .env file to our remote project: npx supabase secrects set ...
+ex:  npx supabase secrets set EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_51PZw7G2LijbC3Ljp0Rq8ZGEVfmDRrwdOrJ9OIORtn14X3APNedKyN2MBnHEjOUCfZYH3lFbedjcy8azPalNzemWJ007iXYE81m
 
 Install lib notifications: npx expo install expo-notifications expo-device expo-constants
 
