@@ -5,6 +5,7 @@ import * as Notifications from 'expo-notifications';
 import Constants from 'expo-constants';
 import { supabase } from './supabase';
 import { Tables } from '@/database.types';
+import { useAuth } from '@/providers/AuthProvider';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -98,4 +99,22 @@ export const notifyUserAboutOrderUpdate = async(order: Tables<'orders'>)=>{
     else if (order.status == 'Delivered')
       body = 'The food has been delivered successfully.';
     sendPushNotification(token.expo_push_token,title,body);
+}
+const fetchAllAdmin = async()=>{
+  const {data,error }= await supabase.from('profiles').select('*').eq('group','ADMIN');
+  if(!data){
+    console.error('Error fetching admin profiles: ',error);
+    return [];
+  }
+  return data;
+}
+
+export const notifyAdminAboutNewOrder = async(order: Tables<'orders'>)=>{
+  const admins = await fetchAllAdmin();
+  admins.forEach(async admin => {
+    const title = 'You have new Order!';
+    const body = `The Order #${order.id} is waiting for you approval.`;
+    sendPushNotification(admin.expo_push_token,title,body);
+  })
+
 }

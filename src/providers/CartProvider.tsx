@@ -6,6 +6,10 @@ import { useInsertOrder } from "@/api/orders";
 import { useRouter } from "expo-router";
 import { useInsertOrderItems } from "@/api/order-items";
 import { initializePaymentSheet, openPaymentSheet } from "@/lib/stripe";
+import {
+  notifyAdminAboutNewOrder,
+  notifyUserAboutOrderUpdate,
+} from "@/lib/notifications";
 type Product = Tables<"products">;
 
 //Define Type Of Cart
@@ -100,11 +104,13 @@ const CartProvider = ({ children }: PropsWithChildren) => {
     }));
     insertOrderItems(orderItems, {
       onSuccess() {
+        notifyAdminAboutNewOrder(order);
         console.warn("Checkout Successfully");
         clearCart();
         router.push(`/(user)/orders/${order.id}`);
       },
     });
+
     //
   };
   //updateQuantity

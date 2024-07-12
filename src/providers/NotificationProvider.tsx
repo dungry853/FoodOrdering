@@ -46,7 +46,7 @@ const NotificationProvider = ({ children }: PropsWithChildren) => {
       responseListener.current &&
         Notifications.removeNotificationSubscription(responseListener.current);
     };
-  }, []);
+  });
 
   return <>{children}</>;
 };
