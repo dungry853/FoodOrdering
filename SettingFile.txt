@@ -1,3 +1,5 @@
+Lệnh generate code: rnref
+
 Lệnh run public SERVER: C:\Users\ACER\Downloads\ngrok http --domain=racer-right-bullfrog.ngrok-free.app 54321
 Lệnh run app qua Tunnel: npx expo start --tunnel 
 Lệnh init supabase: npx supabase init 
